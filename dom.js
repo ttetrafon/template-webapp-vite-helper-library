@@ -9,7 +9,7 @@ import { eventNames } from "../data-library/enums.js";
  * @param {element} innerHTML
  */
 export async function buildStructureFromHtml(element) {
-  console.log("---> buildStructureFromHtml()", element);
+  // console.log("---> buildStructureFromHtml()", element);
   // https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML
   let data = {};
 
@@ -33,7 +33,7 @@ async function elementStructure(element, node) {
   let structure = {};
   switch(node.nodeName) {
     case '#text':
-      console.log("... single #text node");
+      // console.log("... single #text node");
       structure.id = element.id.split("::")[1];
       structure.element = element.nodeName.toLowerCase();
       structure.contents = element.innerText;
@@ -48,15 +48,15 @@ async function elementStructure(element, node) {
  * @param {Node} parent
  */
 export async function buildHtmlFromStructure(data, parent) {
-  console.log(`---> buildHtmlFromStructure`, data, parent);
+  // console.log(`---> buildHtmlFromStructure`, data, parent);
   clearChildren(parent);
   for (let i = 0; i < data.order.length; i++) {
     let element = data[data.order[i]];
-    let node = await createElement(element);
+    let node = await buildElement(element);
     parent.appendChild(node);
   }
 }
-async function createElement(node) {
+export async function buildElement(node) {
   // Create text nodes
   if (node.element === "#text") {
     return document.createTextNode(node.contents);
@@ -75,7 +75,7 @@ async function createElement(node) {
 
   // Handle contents (recursively if necessary)
   if (Array.isArray(node.contents)) {
-    node.contents.forEach(childNode => el.appendChild(createElement(childNode)));
+    node.contents.forEach(childNode => el.appendChild(buildElement(childNode)));
   }
   else if (node.contents && typeof node.contents === "string") {
     el.textContent = node.contents;
