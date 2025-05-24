@@ -18,7 +18,8 @@ export async function buildStructureFromHtml(element) {
 
   // If there is only a single child node, we either have a single element within - could be either #text or any custom element
   if (nodesNumber == 1) {
-    data[element.id] = await elementStructure(element, element.childNodes[0]);
+    let id = element.id.split("::")[1];
+    data[id] = await elementStructure(element, element.childNodes[0]);
     return data;
   }
 
@@ -33,11 +34,9 @@ async function elementStructure(element, node) {
   switch(node.nodeName) {
     case '#text':
       console.log("... single #text node");
-      structure.id = element.id;
+      structure.id = element.id.split("::")[1];
       structure.element = element.nodeName.toLowerCase();
       structure.contents = element.innerText;
-      break;
-    default:
       break;
   }
   return structure;
@@ -68,7 +67,7 @@ async function createElement(node) {
 
   // Add attributes
   if (node.id) {
-    el.id = node.id;
+    el.id = `id::${node.id}`;
   }
   if (node.attributes) {
     node.attributes.forEach(attr => el.setAttribute(attr.attribute, (typeof attr.value == "object" ? JSON.stringify(attr.value) : attr.value)));
