@@ -31,7 +31,7 @@ export async function buildStructureFromHtml(element) {
 }
 async function elementStructure(element, node) {
   let structure = {};
-  switch(node.nodeName) {
+  switch (node.nodeName) {
     case '#text':
       // console.log("... single #text node");
       structure.id = element.id.split("::")[1];
@@ -67,7 +67,7 @@ export async function buildElement(node) {
 
   // Add attributes
   if (node.id) {
-    el.id = `id::${node.id}`;
+    el.id = `id::${ node.id }`;
   }
   if (node.attributes) {
     node.attributes.forEach(attr => el.setAttribute(attr.attribute, (typeof attr.value == "object" ? JSON.stringify(attr.value) : attr.value)));
@@ -109,7 +109,7 @@ export async function clearChildrenOfClass(parent, className) {
  * @param {HTMLElement} self
  * @param {HTMLElement} parent
  */
-export async function findSelfIndexInParent(self, parent) {
+export async function findSelfIndexInParent(self) {
   let element = self;
   let index = 0;
   while (element.previousElementSibling) {
@@ -117,6 +117,31 @@ export async function findSelfIndexInParent(self, parent) {
     index++;
   }
   return index;
+}
+
+/**
+ *
+ * @param {HTMLElement} newElement
+ * @param {HTMLElement} anchorElement
+ */
+export async function putElementBefore(newElement, anchorElement) {
+  anchorElement.parentNode.insertBefore(newElement, anchorElement);
+}
+/**
+ *
+ * @param {HTMLElement} newElement
+ * @param {HTMLElement} anchorElement
+ */
+export async function putElementAfter(newElement, anchorElement) {
+  // console.log("---> putElementAfter(newElement, anchorElement)", newElement, anchorElement);
+  if (anchorElement.nextSibling) {
+    // console.log("anchorElement.nextSibling:", anchorElement.nextSibling);
+    anchorElement.parentNode.insertBefore(newElement, anchorElement.nextSibling);
+  }
+  else {
+    // console.log("anchorElement.parentNode:", anchorElement.parentNode);
+    anchorElement.parentNode.appendChild(newElement);
+  }
 }
 
 //////////////////////////
@@ -222,6 +247,47 @@ function toggleDetailsVisibility(details, detailControls, mouseHover, event) {
   }
 }
 
+/**
+ *
+ * @param {HTMLElement} element
+ * @returns Integer
+ */
+export function getCaretPosition(element) {
+  let caretPos = 0;
+  let sel, range;
+
+  if (window.getSelection) {
+    sel = window.getSelection();
+    if (sel.rangeCount) {
+      range = sel.getRangeAt(0);
+
+      if (range.commonAncestorContainer.parentNode == element ||
+        range.commonAncestorContainer == element) {
+
+        // Create a clone of the range
+        const preCaretRange = range.cloneRange();
+        // Select all contents of the contenteditable
+        preCaretRange.selectNodeContents(element);
+        // Set end to the original range's end
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        // Get the length (in characters) of the text from start to caret
+        caretPos = preCaretRange.toString().length;
+      }
+    }
+  }
+
+  return caretPos;
+}
+/**
+ * Counts the total number of characters within an element and its children.
+ * @param {HTMLElement} element
+ * @returns Integer
+ */
+export function getTotalCharacterCount(element) {
+  // TODO: will need to recursively run the node-tree for custom elements...
+  const text = element.textContent || element.innerText;
+  return text.length;
+}
 /**
  *
  * @param {Selection} selection
