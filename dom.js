@@ -362,11 +362,12 @@ export async function toggleSpinningCircle(that, state) {
  * @param {HTMLElement} that
  * @param {String} targetUrl
  */
-export async function emitNavigationEvent(that, targetUrl) {
+export async function emitNavigationEvent(that, targetUrl, stateData) {
   emitCustomEvent(that, eventNames.NAVIGATE.description, {
     bubbles: true,
     composed: true,
-    target: targetUrl
+    target: targetUrl,
+    stateData: stateData
   });
 }
 /**
