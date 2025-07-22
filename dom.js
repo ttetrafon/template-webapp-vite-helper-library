@@ -37,6 +37,10 @@ async function elementStructure(element, node) {
       structure.id = element.id.split("::")[1];
       structure.element = element.nodeName.toLowerCase();
       structure.contents = element.innerText;
+      let newLine = element.getAttribute("new-line");
+      if (newLine) {
+        structure.newLine = true;
+      }
       break;
   }
   return structure;
