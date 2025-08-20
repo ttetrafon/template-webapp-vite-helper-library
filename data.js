@@ -23,7 +23,6 @@ export async function readAllJsonFiles(location) {
   const allData = {};
 
   for (const path in jsonData) {
-    console.log("...", path);
     const module = await jsonData[path]();
     const filename = path.split('/').pop().replace('.json', '');
     allData[filename] = module.default;
