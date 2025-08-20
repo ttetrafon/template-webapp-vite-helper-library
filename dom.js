@@ -419,3 +419,21 @@ export async function emitSubPageContainerEvent(that, route) {
     });
   }, 0);
 }
+
+///////////////
+///   CSS   ///
+///////////////
+
+/**
+ *
+ * @param {HTMLElement} element
+ * @param {String} cssProperty
+ * @returns
+ */
+export function getNumberFromPixelValue(element, cssProperty) {
+  const style = getComputedStyle(element);
+  const size = style.getPropertyValue(cssProperty);
+  let len = size.length;
+  let num = size.substring(0, len);
+  return parseFloat(num);
+}
