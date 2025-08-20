@@ -1,3 +1,41 @@
+const assetJsonData = import.meta.glob('../assets/data/*.json');
+
+////////////////
+///   READ   ///
+////////////////
+
+/**
+ *
+ * @param {String} location
+ * @returns
+ */
+export async function readAllJsonFiles(location) {
+  let jsonData = null;
+
+  switch(location) {
+    case '../assets/data/':
+      jsonData = assetJsonData;
+      break;
+    default:
+      return {};
+  }
+
+  const allData = {};
+
+  for (const path in jsonData) {
+    console.log("...", path);
+    const module = await jsonData[path]();
+    const filename = path.split('/').pop().replace('.json', '');
+    allData[filename] = module.default;
+  }
+
+  return allData;
+}
+
+////////////////////////
+///   MANIPULATION   ///
+////////////////////////
+
 export function allCombinations(arr) {
   if (arr.length == 1) {
     return arr[0];
